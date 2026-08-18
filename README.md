@@ -197,4 +197,19 @@ pip install -r generator/requirements.txt
 ```
   # 전체 옵션
   scripts\run-generator.bat [DOMAIN] [DURATION] [BASE_RPS] [CORRUPTION_RATE] [TASK_COUNT] [REGION] [TIME_SCALE]
+
+  # 흐름
+  로컬 PC 명령 수행
+  ↓
+  AWS ecs run-task 가동
+  ↓
+  ECS Cluster 
+  ↓
+  Fargate task 작동
+  ↓
+  Docker Container
+  ↓
+  Python 로그 생성기 작동
+  ↓
+  CloudWatch에 로그 저장
 ```
