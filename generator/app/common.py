@@ -1,4 +1,5 @@
 # 응답 코드 참여하는 함수import random
+import random
 
 # 응답 코드 처리하는 함수
 def http_status(method: str, success: float = 0.965, client_error: float = 0.027) -> int:
