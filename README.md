@@ -121,7 +121,7 @@ File/Batch         AWS Stream       Event Stream
                   ▼
             Bronze Layer
                   │
-          ETL / ELT Processing
+          ETL / ELT Processing <- 챕터 4에서 구성
       Pandas / Polars / Spark
                   │
                 Silver
