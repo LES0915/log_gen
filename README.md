@@ -22,7 +22,7 @@
 - iam.tf        : Fargate가 ECR 이미지 획득, CloudWatch에 로그기록 -> 권한부여
 - logs.tf       : ECS 컨테이너내에 (로그 생성기 존재) 발생되는 로그 -> 로그 그룹 지정
 - ecr.tf        : 로그 생성기 (파이썬 코드) -> Docker 이미지로 생성하여 저장할 저장소
-- esc.tf        : ECS 클러스터와 Fargate Task Definition등이 구동되는 실행 환경 제공 -> 1회성 (상시 운영 x)
+- ecs.tf        : ECS 클러스터와 Fargate Task Definition등이 구동되는 실행 환경 제공 -> 1회성 (상시 운영 x)
 - outputs.tf    : 생성후 각종 정보 출력
 
 # 인프라 구성
@@ -37,6 +37,7 @@
 
 # 로그 생성기 (~/generator)
 ## 로그 포멧 (공통)
+- 서비스 요청에 따른 처리가 완료된후 로그로 기록하는 최종 필드를 포함한 데이터 샘플
 ```json
 {
   "schema_version": "1.0",
@@ -60,12 +61,14 @@
     "latency_ms": 287,
     "response_bytes": 3590
   },
-  "data": {... domain specific ...}
+  "data": {... domain specific ...}  <- 도메인별로 커스텀 구성
 }
 ```
 
 ## 지원 도메인 및 이벤트 정의
 - domain으로 카테고리 설정
+- 각 도메인들을 이벤트 비율 조정, 시간대별 발생량 조절, 주요 필드 설정, 각각에 대한 지연시간 설정
+  - 실제 도메인의 인사이트를 반영하여 설계
 
 | DOMAIN | 주요 이벤트 예시 |
 |---|---|
@@ -109,7 +112,7 @@ malformed_json
 ```
 ```
               Data Source Simulator
-              Fargate + Python/Faker
+              Fargate + Python/Faker /  E`L`K, E`F`K
                       │ <- (다양한 출력 방향으로 전개)
     ┌─────────────────┼─────────────────┐
     │                 │                 │
@@ -121,8 +124,8 @@ File/Batch         AWS Stream       Event Stream
                   ▼
             Bronze Layer
                   │
-          ETL / ELT Processing <- 챕터 4에서 구성
-      Pandas / Polars / Spark
+          ETL / ELT Processing
+      Pandas / Polars / Spark   <- Ai에게 요청해서 구성, 챕터 4에서 진행
                   │
                 Silver
                   │
@@ -133,6 +136,7 @@ File/Batch         AWS Stream       Event Stream
 ```
 
 # 제너레이터 구조 및 설치
+- 구조
 ```
 ~/generator
  L app
@@ -150,22 +154,6 @@ pip install -r generator/requirements.txt
 ```
 
 # 스크립트 
-- setup.bat
-```
-  Terraform init
-      ↓
-  Terraform apply
-      ↓
-  ECR Repository 생성
-  ECS/Fargate 관련 인프라 생성
-      ↓
-  AWS ECR 로그인
-      ↓
-  Docker 이미지 Build
-      ↓
-  ECR에 latest 이미지 Push
-```
-
 - run-local.bat
 - 로컬 PC에서 로그 생성 (로컬 테스트)
 ```
@@ -174,9 +162,8 @@ pip install -r generator/requirements.txt
 
   # 샘플 
   scripts\run-local.bat finance 60 5 0.05 both 1
-```
 
-# 해석
+  # 해석
   finance 도메인 로그 생성
   ↓
   60초 동안 실행
@@ -192,8 +179,32 @@ pip install -r generator/requirements.txt
 
 ```
 
+- setup.bat (로컬 PC에서 Docker Client 구동후 진행)
+```
+  # 처리 흐름
+  Terraform init
+      ↓
+  Terraform apply
+      ↓
+  ECR Repository 생성
+  ECS/Fargate 관련 인프라 생성
+      ↓
+  AWS ECR 로그인
+      ↓
+  Docker 이미지 Build
+      ↓
+  ECR에 latest 이미지 Push
+
+  # 실행
+  ./script/setup.bat
+```
+
+
+
 - run-generator.bat
   - AWS fargate에서 진행
+  - 수정 (119라인)
+    if errorlevel 1 set "LOG_GROUP=/ecs/de-ai-25-loggen" => 본인 주소로 변경
 ```
   # 전체 옵션
   scripts\run-generator.bat [DOMAIN] [DURATION] [BASE_RPS] [CORRUPTION_RATE] [TASK_COUNT] [REGION] [TIME_SCALE]
@@ -212,4 +223,32 @@ pip install -r generator/requirements.txt
   Python 로그 생성기 작동
   ↓
   CloudWatch에 로그 저장
+
+
+  # 명령어 샘플
+  scripts\run-generator.bat ecommerce 2 5 0.05 1 ap-northeast-2 1    
+  ---
+  ============================================================
+  Fargate synthetic log generator
+  ============================================================
+  Run ID          : loggen-2251219129-932
+  Domain          : ecommerce
+  Duration        : 2s
+  Base RPS        : 5
+  Time scale      : 1
+  Corruption rate : 0.05
+  Tasks           : 1
+  Region          : ap-northeast-2
+  Cluster         : de-ai-25-loggen-cluster
+
+  -----------------------------------------------------------------------------------------------------------       
+  |                                                 RunTask                                                 |
+  +---------------------------------------------------------------------------------------------------------+
+  |  arn:aws:ecs:ap-northeast-2:827913617635:task/de-ai-25-loggen-cluster/c79e8eb92b65483cb216e63afcee22d8  |
+  +---------------------------------------------------------------------------------------------------------+
+
+
+  Task started.
+  Follow generated logs:
+    aws logs tail "/ecs/de-ai-25-loggen" --follow --region "ap-northeast-2"
 ```
