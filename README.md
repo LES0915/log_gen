@@ -142,3 +142,9 @@ File/Batch         AWS Stream       Event Stream
  L Dockerfile       : 컨테이너 기반이 되는 이미지 생성용, ECR 푸시됨
  L requirements.txt : 필요 패키지
 ```
+
+- 설치
+```
+# 루트 위치에서
+pip install -r generator/requirements.txt
+```
