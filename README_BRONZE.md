@@ -103,10 +103,37 @@ Fargate → Kinesis → Firehose → S3 확인 (jsonl, gzip)
        Faker
        boto3  # AWS SDK 패키지
        ```
+       - 로컬 PC에 boto3 설치
+       ```
+              pip install boto3
+       ```
 - config.py
        - ecs 세팅한 환경변수 전달
 - output.py
        - 출력 방향에 kinesis 추가
+- main.py
+       - 생성자 매개변수 조정
+
 
 
 # bat/shell 검토
+- 코드 수정 => 이미지 수정 => ecr 업데이트 => setup.bat/sh
+```
+# setup.bat
+docker build --no-cache --platform linux/amd64 -t "%REPO%:latest" "%GENERATOR%"
+
+# setup.sh
+docker build --no-cache --platform linux/amd64 -t "$REPO:latest" "$GENERATOR"
+```
+
+# 브론즈 데이터 생성
+- 명령 옵션
+```
+ecommerce       도메인
+5               5초 실행
+5               기본 5 RPS
+0.05            오염 데이터 5%
+1               Fargate Task 1개
+ap-northeast-2  서울 리전
+1               Time Scale 1배
+```
