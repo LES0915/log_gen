@@ -78,7 +78,7 @@ Fargate → Kinesis → Firehose → S3 확인 (jsonl, gzip)
 # 인프라 수정 및 추가
 - tree /f 명령으로 구성도에서 인프라만 추출
 ```
-# 수정은 표기 않함
+# 수정은 표기 안함
 ├─infra
 │  │  ecr.tf            # 유지
 │  │  ecs.tf            # 유지
@@ -86,7 +86,7 @@ Fargate → Kinesis → Firehose → S3 확인 (jsonl, gzip)
 │  │  locals.tf
 │  │  logs.tf
 │  │  outputs.tf
-│  │  provider.tf
+│  │  provider.tf       # 1. 수정
 │  │  sg.tf
 │  │  variables.tf
 │  │  version.tf         # 유지
