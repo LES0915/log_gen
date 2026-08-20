@@ -78,25 +78,35 @@ Fargate → Kinesis → Firehose → S3 확인 (jsonl, gzip)
 # 인프라 수정 및 추가
 - tree /f 명령으로 구성도에서 인프라만 추출
 ```
-# 수정은 표기 안함
+# 수정은 표기 않함
 ├─infra
 │  │  ecr.tf            # 유지
-│  │  ecs.tf            # 유지
-│  │  iam.tf            
-│  │  locals.tf
-│  │  logs.tf
-│  │  outputs.tf
+│  │  ecs.tf            # 9. 수정
+│  │  iam.tf            # 6/8. 수정 (6.firehose 관련, 8.ecs-task에서 kinesis put 처리) 
+│  │  locals.tf         # 3. 수정
+│  │  logs.tf           # 유지
+│  │  outputs.tf        # 10. 수정
 │  │  provider.tf       # 1. 수정
-│  │  sg.tf
-│  │  variables.tf
-│  │  version.tf         # 유지
-│  │  vpc.tf             # 유지
+│  │  sg.tf             # 유지
+│  │  variables.tf      # 2. 수정 
+│  │  version.tf        # 유지
+│  │  vpc.tf            # 유지
 │  │  
-│  ├─ kinesis.tf         # 신규
-│  ├─ firehose.tf        # 신규
-│  ├─ s3.tf              # 신규
+│  ├─ kinesis.tf        # 4. 신규
+│  ├─ firehose.tf       # 7. 신규
+│  ├─ s3.tf             # 5. 신규
 ```
 
-# 파이썬 검토
+# 파이썬 검토 (kinesis로 전송 조정)
+- 패키지
+       ```
+       Faker
+       boto3  # AWS SDK 패키지
+       ```
+- config.py
+       - ecs 세팅한 환경변수 전달
+- output.py
+       - 출력 방향에 kinesis 추가
+
 
 # bat/shell 검토
