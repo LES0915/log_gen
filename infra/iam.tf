@@ -21,6 +21,7 @@ resource "aws_iam_role" "ecs_execution" {
 # 3. Role, 정책 연결 마무리, 실제 실행시 필요한 권한 부여!!
 resource "aws_iam_role_policy_attachment" "ecs_execution" {
   role       = aws_iam_role.ecs_execution.name
+  # aws 관리형 정책을 사전에 AmazonECSTaskExecutionRolePolicy 구성(이 정책에 1번라인에 기술한 내용 반영)
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
@@ -85,6 +86,7 @@ resource "aws_iam_role_policy" "firehose" {
   role = aws_iam_role.firehose.id
   policy = data.aws_iam_policy_document.firehose_s3.json
 }
+
 
 # ecs -> task 에서 kinesis 전송시 role을 별도 추가
 # ecs task role
