@@ -46,3 +46,42 @@ resource "aws_iam_role" "firehose" {
   # role에 적용되는 정책 -> 어떤 권한을 가지는가?
   assume_role_policy = data.aws_iam_policy_document.firehose_assume.json
 }
+
+# Firehose가 입력으로 kinesis에서 읽어오는, 출력으로 s3에 저장, 권한 
+data "aws_iam_policy_document" "firehose_s3" {
+  # kinesis 읽기 권한 관련  
+  statement {
+    effect = "Allow"
+    actions = [ 
+      "kinesis:DescribeStream",
+      "kinesis:GetShardIterator",
+      "kinesis:GetRecords",
+      "kinesis:ListShards"
+    ]
+    resources = [ 
+      aws_kinesis_stream.logs.arn
+    ] 
+  }
+  # s3 저장 권한 관련
+  statement {
+    effect = "Allow"
+    actions = [ 
+      "s3:AbortMultipartUpload",
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+      "s3:PutObject"
+    ]
+    resources = [ 
+      aws_s3_bucket.data.arn,           # 해당 버킷
+      "${aws_s3_bucket.data.arn}/*"     # 해당 버킷 이하 모든 경로
+    ]
+  }
+}
+
+
+# firehose_s3를 통해서 조회한 권한을 aws_iam_role.firehose 에 부여
+resource "aws_iam_role_policy" "firehose" {
+  name = "${var.project_name}-firehose-s3-policy"
+  role = aws_iam_role.firehose.id
+  policy = data.aws_iam_policy_document.firehose_s3.json
+}
