@@ -204,7 +204,7 @@ pip install -r generator/requirements.txt
 - run-generator.bat
   - AWS fargate에서 진행
   - 수정 (119라인)
-    if errorlevel 1 set "LOG_GROUP=/ecs/de-ai-25-loggen" => 본인 주소로 변경
+    if errorlevel 1 set "LOG_GROUP=/ecs/de-ai-13-loggen" => 본인 주소로 변경
 ```
   # 전체 옵션
   scripts\run-generator.bat [DOMAIN] [DURATION] [BASE_RPS] [CORRUPTION_RATE] [TASK_COUNT] [REGION] [TIME_SCALE]
@@ -239,16 +239,16 @@ pip install -r generator/requirements.txt
   Corruption rate : 0.05
   Tasks           : 1
   Region          : ap-northeast-2
-  Cluster         : de-ai-25-loggen-cluster
+  Cluster         : de-ai-13-loggen-cluster
 
   -----------------------------------------------------------------------------------------------------------       
   |                                                 RunTask                                                 |
   +---------------------------------------------------------------------------------------------------------+
-  |  arn:aws:ecs:ap-northeast-2:827913617635:task/de-ai-25-loggen-cluster/c79e8eb92b65483cb216e63afcee22d8  |
+  |  arn:aws:ecs:ap-northeast-2:827913617635:task/de-ai-13-loggen-cluster/c79e8eb92b65483cb216e63afcee22d8  |
   +---------------------------------------------------------------------------------------------------------+
 
 
   Task started.
   Follow generated logs:
-    aws logs tail "/ecs/de-ai-25-loggen" --follow --region "ap-northeast-2"
+    aws logs tail "/ecs/de-ai-13-loggen" --follow --region "ap-northeast-2"
 ```
