@@ -13,7 +13,7 @@ locals {
   log_group_name  = "/ecs/${var.project_name}"
 
   # [브론즈 추가]
-  # 데이터 스트림, 파이어포스 이름 정의
+  # 데이터 스트림, 파이어호스 이름 정의
   kinesis_stream_name = "${var.project_name}-kinesis"
   firehose_name       = "${var.project_name}-firehose"
 }
@@ -25,5 +25,5 @@ locals {
   silver_firehose_name       = "${var.project_name}-silver-firehose"
   flink_application_name     = "${var.project_name}-silver-flink"
   flink_log_group_name       = "/aws/kinesis-analysis/${var.project_name}-silver-flink"
-  flink_log_stream_name       = "${var.project_name}-kinesis-analysis-log-stream"
+  flink_log_stream_name      = "${var.project_name}-kinesis-analysis-log-stream"
 }
